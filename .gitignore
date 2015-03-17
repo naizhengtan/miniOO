@@ -1,0 +1,7 @@
+mini
+*.cmi
+*.cmo
+miniLEX.ml
+miniYACC.ml
+miniYACC.mli
+miniYACC.output
