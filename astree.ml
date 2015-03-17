@@ -10,7 +10,7 @@ and decl_node =
     Decl of string
 
 and procedure =
-    Procedure of string * (*function name*)
+    Procedure of (*string * function name*)
                  var_node * (*parameter*)
                  cmd_node (* code *) 
 
@@ -21,6 +21,7 @@ and expr_node =
     | Number of int
     | Minus of expr_node * expr_node
     | Plus of  expr_node * expr_node
+    | Deref of expr_node * expr_node
     | Null of unit
 
 and bool_node =
