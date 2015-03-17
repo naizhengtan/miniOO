@@ -7,7 +7,7 @@ and field_node =
     Field of string
 
 and decl_node = 
-    Decl of string
+    Decl of var_node 
 
 and procedure =
     Procedure of (*string * function name*)
@@ -37,14 +37,15 @@ and cmd_node =
     | ProcCall of expr_node * expr_node
     | Malloc of expr_node
     | VarAssign of var_node * expr_node
-    | FieldAssign of field_node * expr_node
+    | FieldAssign of expr_node * field_node * expr_node
     | Scope of cmd_node * cmd_node
     | Loop of bool_node * cmd_node
     | Cond of bool_node * cmd_node * cmd_node
     | Parl of cmd_node * cmd_node
     | Atom of cmd_node
+and prog_node =
+    Prog of cmd_node list
 ;;
-
 (* Print functions *)
 
 let print_field x =
@@ -59,15 +60,19 @@ let print_var x =
 
 let print_decl x = 
     match x with
-    | Decl (vname) -> print_string ("Define("^vname^")")
+    | Decl (vname) -> 
+            print_string "Define(";
+            print_var vname;
+            print_string ")"
 ;;
 
 let rec print_proc x =
     match x with
-    | Procedure (fname, param, code) -> 
-            print_string ("Func "^fname^"(");
+    | Procedure (param, code) -> 
+            print_string "Func: {";
             print_var param;
-            print_cmd code 
+            print_cmd code;
+            print_string "}"
 
 and print_expr x =
     match x with
@@ -87,6 +92,12 @@ and print_expr x =
             print_expr expr2;
             print_string ")"
     | ProcExpr (proc) -> print_proc proc
+    | Deref (expr1, expr2) -> 
+            print_string "(";
+            print_expr expr1;
+            print_string ".";
+            print_expr expr2;
+            print_string ")"
     | Null (null) -> print_string "null" 
 
 and print_bool x =
@@ -135,11 +146,13 @@ and print_cmd x =
             print_string "=";
             print_expr expr;
             print_string ")"
-    | FieldAssign (field, expr) ->
+    | FieldAssign (expr1, field, expr2) ->
             print_string "(";
+            print_expr expr1;
+            print_string ".";
             print_field field;
             print_string "=";
-            print_expr expr;
+            print_expr expr2;
             print_string ")"
     | Scope (cmd1, cmd2) ->
             print_string "{";
@@ -172,13 +185,5 @@ and print_cmd x =
             print_cmd cmd;
             print_string ")"
 ;;
-
-let x = Variable("a");;
-let y = Variable("b");;
-let expr1 = Minus ( VarExpr(x) , VarExpr(y));;
-print_expr expr1;;
-
-
-
 
 

@@ -9,7 +9,7 @@
 %token < string > FIELD 
 %token < int > NUM
 %start prog 
-%type <prog_node> prog 
+%type <Astree.cmd_node list> prog 
 %type <var_node> var
 %type <field_node> field
 %type <expr_node> expr
@@ -22,8 +22,8 @@
 %%
 
 prog:
-      { Prog ((cmd_node list) []) }
-    | cmd SEMICOLON prog { Prog (cmd::prog) }
+      { [] }
+    | cmd SEMICOLON prog { $1::$3 }
 
 var :
     VAR      { Variable ($1) }
@@ -57,11 +57,11 @@ cmd:
     | expr PARENOPEN expr PARENCLOSE { ProcCall ($1, $3) }
     | MALLOC PARENOPEN expr PARENCLOSE { Malloc ($3) }
     | var ASSIGN expr { VarAssign ($1, $3) }
-    | expr DOT expr ASSIGN expr { FieldAssign ($1, $3, $5)  } 
+    | expr DOT field ASSIGN expr { FieldAssign ($1, $3, $5)  } 
     | SKIP { Skip }
     | SOPEN cmd SEMICOLON cmd SCLOSE { Scope ($2, $4) }
     | WHILE boolean cmd { Loop ($2, $3) }
-    | IF boolean cmd ELSE cmd { Cond ($2, $3) }
+    | IF boolean cmd ELSE cmd { Cond ($2, $3, $5) }
     | SOPEN cmd PARELLEL cmd SCLOSE { Parl ($2, $4) }
     | ATOMIC PARENOPEN cmd PARENCLOSE { Atom ($3) }
 
