@@ -8,7 +8,7 @@ let field = (['a' - 'z']|['A' - 'Z'])(['a' - 'z']|['A' - 'Z']|['0' - '9'])*
 let num = ['0' - '9']+
 
 rule token = parse
-  | [' ' '\t' '\n'] { test lexbuf } 
+  | [' ' '\t' '\n'] { token lexbuf } 
   | "var"        { DEFINE }
   | var as v     { VAR v }
   | field as f   { FIELD f }
@@ -38,6 +38,7 @@ rule token = parse
   | "while"      { WHILE }
   | "skip"       { SKIP }
   | eof          { raise Eof}
+(*
 and test = parse
   | [' ' '\t' '\n'] { test lexbuf } 
   | "var"        { print_string "VAR "; test lexbuf}
@@ -78,4 +79,4 @@ let main () =
 
 let _ = Printexc.print main ()
 }
-
+*)

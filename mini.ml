@@ -3,7 +3,7 @@ open Astree;;
 
 let rec print_ast = function 
     | [] -> ()
-    | cmd::prog -> print_cmd cmd; print_ast prog
+    | cmd::prog -> Astree.print_cmd cmd; print_ast prog
 ;;
 
 try

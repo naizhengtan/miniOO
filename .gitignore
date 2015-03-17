@@ -4,4 +4,5 @@ mini
 miniLEX.ml
 miniYACC.ml
 miniYACC.mli
+astree.mli
 miniYACC.output
