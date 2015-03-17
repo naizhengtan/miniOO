@@ -1,6 +1,7 @@
 all:
 	ocamllex miniLEX.mll
 	ocamlyacc miniYACC.mly
+	ocamlc -c astree.mli
 	ocamlc -c miniYACC.mli
 	ocamlc -c miniLEX.ml 
 	ocamlc -c miniYACC.ml
