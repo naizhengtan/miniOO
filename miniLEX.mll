@@ -10,9 +10,6 @@ let num = ['0' - '9']+
 rule token = parse
   | [' ' '\t' '\n'] { token lexbuf } 
   | "var"        { DEFINE }
-  | var as v     { VAR v }
-  | field as f   { FIELD f }
-  | num as n     { NUM (int_of_string n) }
   | '+'          { PLUS }
   | '-'          { MINUS }
   | '='          { ASSIGN }
@@ -37,7 +34,10 @@ rule token = parse
   | "else"       { ELSE }
   | "while"      { WHILE }
   | "skip"       { SKIP }
-  | eof          { raise Eof}
+  | var as v     { VAR v }
+  | field as f   { FIELD f }
+  | num as n     { NUM (int_of_string n) }
+  | eof          { EOF }
 (*
 and test = parse
   | [' ' '\t' '\n'] { test lexbuf } 

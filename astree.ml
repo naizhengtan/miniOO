@@ -43,8 +43,6 @@ and cmd_node =
     | Cond of bool_node * cmd_node * cmd_node
     | Parl of cmd_node * cmd_node
     | Atom of cmd_node
-and prog_node =
-    Prog of cmd_node list
 ;;
 (* Print functions *)
 
@@ -186,4 +184,9 @@ and print_cmd x =
             print_string ")"
 ;;
 
-
+let rec print_prog = function 
+    | [] -> print_newline ()
+    | cmd::prog -> print_cmd cmd;
+                   print_string ";";
+                   print_prog prog
+;;

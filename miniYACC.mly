@@ -4,7 +4,7 @@
 
 %token DEFINE PLUS MINUS ASSIGN EQUAL PARENOPEN PARENCLOSE SOPEN SCLOSE 
 %token DOT COLON SEMICOLON LESSTHAN GREATTHAN PARELLEL NULL PROC
-%token TRUE FALSE ATOMIC MALLOC IF ELSE WHILE SKIP
+%token TRUE FALSE ATOMIC MALLOC IF ELSE WHILE SKIP EOF
 %token < string > VAR
 %token < string > FIELD 
 %token < int > NUM
@@ -21,9 +21,6 @@
 
 %%
 
-prog:
-      { [] }
-    | cmd SEMICOLON prog { $1::$3 }
 
 var :
     VAR      { Variable ($1) }
@@ -65,4 +62,7 @@ cmd:
     | SOPEN cmd PARELLEL cmd SCLOSE { Parl ($2, $4) }
     | ATOMIC PARENOPEN cmd PARENCLOSE { Atom ($3) }
 
+prog:
+    cmd SEMICOLON { [$1] }
+    | prog cmd SEMICOLON { $1@[$2] }
 %%
