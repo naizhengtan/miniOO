@@ -31,6 +31,7 @@ rule token = parse
   | "atomic"     { ATOMIC }
   | "malloc"     { MALLOC }
   | "if"         { IF }
+  | "then"       { THEN }
   | "else"       { ELSE }
   | "while"      { WHILE }
   | "skip"       { SKIP }

@@ -4,7 +4,7 @@
 
 %token DEFINE PLUS MINUS ASSIGN EQUAL PARENOPEN PARENCLOSE SOPEN SCLOSE 
 %token DOT COLON SEMICOLON LESSTHAN GREATTHAN PARELLEL NULL PROC
-%token TRUE FALSE ATOMIC MALLOC IF ELSE WHILE SKIP EOF
+%token TRUE FALSE ATOMIC MALLOC IF THEN ELSE WHILE SKIP EOF
 %token < string > VAR
 %token < string > FIELD 
 %token < int > NUM
@@ -16,8 +16,8 @@
 %type <bool_node> boolean
 %type <decl_node> decl
 %type <cmd_node> cmd
-%left PLUS MINUS DOT
 %right ASSIGN
+%left PLUS MINUS DOT
 
 %%
 
@@ -58,7 +58,7 @@ cmd:
     | SKIP { Skip }
     | SOPEN cmd SEMICOLON cmd SCLOSE { Scope ($2, $4) }
     | WHILE boolean cmd { Loop ($2, $3) }
-    | IF boolean cmd ELSE cmd { Cond ($2, $3, $5) }
+    | IF boolean THEN cmd ELSE cmd { Cond ($2, $4, $6) }
     | SOPEN cmd PARELLEL cmd SCLOSE { Parl ($2, $4) }
     | ATOMIC PARENOPEN cmd PARENCLOSE { Atom ($3) }
 
