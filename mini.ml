@@ -1,11 +1,15 @@
 open Parsing;;
 open Astree;;
-
+open Heapstack;;
+open Executor;;
 
 let lexbuf = Lexing.from_channel stdin in
 try
     let ast = MiniYACC.prog MiniLEX.token lexbuf in
-        print_prog ast
+        (*print_prog ast*)
+    exec ast;
+    print_stack ();
+    print_heap ()
 with Parse_error ->
     let curr = lexbuf.Lexing.lex_curr_p in
     let line = curr.Lexing.pos_lnum in
