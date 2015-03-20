@@ -14,11 +14,27 @@ type heapframe =
 (* global variable *)
 
 let mainStack : (string, heaploc) Hashtbl.t  = Hashtbl.create 1024;;
-let curStack = ref mainStack;; 
+let stackHistory = Array.make 1024 mainStack;;
+let curStack = ref mainStack;;
+let stack_history_pos = ref 0;;
+
 let mainHeap  = Array.make 4096 NullFram;;
 let heapCounter = ref 0;;
 
 (* methods *)
+
+let stack_history_push (stack: (string, heaploc) Hashtbl.t) =
+    stack_history_pos := !stack_history_pos + 1;
+    let newstack = Hashtbl.copy stack in
+        Array.set stackHistory !stack_history_pos newstack 
+;;
+
+let stack_history_pop () =
+    let pos = !stack_history_pos in
+        stack_history_pos := !stack_history_pos - 1;
+        Array.get stackHistory pos
+;;
+
 let stack_add stack (var:var_node) (loc:heaploc) = 
     match var with
     | Variable(vname) -> Hashtbl.add stack vname loc 
@@ -82,7 +98,11 @@ let print_heapframe (frame:heapframe) =
     | Value(num) -> print_int num;
     | Location(_) -> print_string "Location";
     | Object(_) -> print_string "Object";
-    | Closure(_) -> print_string "Closure"
+    | Closure(var, cmd, _) -> 
+            print_string "Closure: "; 
+            print_var var;
+            print_cmd cmd
+                        
 ;;
 
 let print_heap () =

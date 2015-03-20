@@ -6,7 +6,7 @@ open Executor;;
 let lexbuf = Lexing.from_channel stdin in
 try
     let ast = MiniYACC.prog MiniLEX.token lexbuf in
-        (*print_prog ast*)
+    print_prog ast;
     exec ast;
     print_stack ();
     print_heap ()

@@ -187,6 +187,6 @@ and print_cmd x =
 let rec print_prog = function 
     | [] -> print_newline ()
     | cmd::prog -> print_cmd cmd;
-                   print_string ";";
+                   print_string " || ";
                    print_prog prog
 ;;
