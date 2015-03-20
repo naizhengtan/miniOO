@@ -21,10 +21,24 @@ let rec eval (expr: expr_node) =
                         | Value(num2) ->
                                 Value (num1 + num2)
                         | _ -> print_string "Error 1: 
-                                only num can applied for +"; NullFram
+                                only num can applied for +\n"; NullFram
                         )
                 | _ -> print_string "Error 1: only num can 
-                                    applied for +"; NullFram
+                                    applied for +\n"; NullFram
+                )
+    | Minus (expr1, expr2) ->
+            let val1 = eval expr1 in
+            let val2 = eval expr2 in
+                (match val1 with
+                | Value(num1) ->
+                        (match val2 with 
+                        | Value(num2) ->
+                                Value (num1 - num2)
+                        | _ -> print_string "Error 3: 
+                                only num can applied for -\n"; NullFram
+                        )
+                | _ -> print_string "Error 3: only num can 
+                                    applied for -\n"; NullFram
                 )
     | _ -> print_string "unfinished expr eval\n"; NullFram
 
