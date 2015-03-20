@@ -41,6 +41,7 @@ let rec eval_bool (cond: bool_node) =
 
 and eval (expr: expr_node) =
     match expr with 
+    | FieldExpr(field) -> FieldIndex(field)
     | VarExpr(var) -> 
             let loc = stack_find !curStack var in
                 heap_get loc
@@ -78,7 +79,15 @@ and eval (expr: expr_node) =
                 | _ -> print_string "Error 3: only num can 
                                     applied for -\n"; NullFram
                 )
-    | _ -> print_string "unfinished expr eval\n"; NullFram
+    | Deref (expr1, expr2) ->
+            let obj = eval expr1 in
+            let field = eval expr2 in
+                (match field with
+                | FieldIndex(f) -> obj_find obj f
+                | _ -> print_string "Error 7: only field is allowed in
+                            deref expresion\n"; NullFram;
+                )
+    | Null (_) -> NullFram
 
 let rec exec_cmd (cmd: cmd_node) =
     match cmd with
@@ -101,15 +110,23 @@ let rec exec_cmd (cmd: cmd_node) =
                         let oldStack = stack_history_pop () in
                             curStack := oldStack
                 | _ -> print_string "Error 2: proc is not funct!\n")
+    | Malloc (var) -> 
+            let loc = heap_alloc () in
+                stack_add !curStack var loc;
+                heap_set loc (gen_empty_obj ())
+    | VarAssign (var, expr) ->
+            let loc = stack_find !curStack var in
+                let value = eval expr in
+                    heap_set loc value 
+    | FieldAssign (expr1, field, expr2) ->
+            let obj = eval expr1 in
+            let value = eval expr2 in
+                obj_add obj field value
     | Cond (cond, cmd1, cmd2) ->
             if eval_bool cond then
                 exec_cmd cmd1
             else 
                 exec_cmd cmd2
-    | VarAssign (var, expr) ->
-            let loc = stack_find !curStack var in
-                let value = eval expr in
-                    heap_set loc value 
     | _ -> print_string "unfinished cmd execution\n"
 ;;
 

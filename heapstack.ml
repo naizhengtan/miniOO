@@ -6,8 +6,8 @@ type heaploc = Loc of int;;
 type heapframe =
       NullFram
     | Value of int
-    | Location of heaploc
-    | Object of (field_node, heapframe) Hashtbl.t
+    | FieldIndex of field_node 
+    | Object of (string, heapframe) Hashtbl.t
     | Closure of var_node * cmd_node * (string, heaploc) Hashtbl.t
 ;;
 
@@ -79,7 +79,39 @@ let heap_add (x:heapframe) =
         heap_set loc x
 ;;
 
+let obj_add (hobj:heapframe) (f:field_node) (v:heapframe) =
+    match hobj with 
+    | Object (obj) -> 
+        begin
+        match f with
+        | Field(fname) ->
+            if Hashtbl.mem obj fname then
+                Hashtbl.replace obj fname v
+            else 
+                Hashtbl.add obj fname v
+        end
+    | _ -> print_string "Error 6: only object can use field.\n"
+;;
+
+let obj_find (hobj:heapframe) (f:field_node) =
+    match hobj with 
+    | Object(obj) ->
+        (match f with 
+        | Field(fname) ->
+            if Hashtbl.mem obj fname then
+                Hashtbl.find obj fname
+            else
+                NullFram
+        )
+    | _ -> print_string "Error 6: only object can use field.\n";NullFram
+;;
+
 (* constructor of heapframe*)
+
+let gen_empty_obj () =
+    let empty = Hashtbl.create 128 in
+        Object (empty)
+;;
 
 (* print stack, print heap *)
 let print_stackframe (index:string) (loc:heaploc) =
@@ -96,12 +128,22 @@ let print_stack () =
     print_string "---------------\n"
 ;;
 
-let print_heapframe (frame:heapframe) =
+let rec print_obj (ht: (string, heapframe) Hashtbl.t) =
+    Hashtbl.iter print_field_heapframe ht
+
+and print_field_heapframe (f:string) (h:heapframe) =
+    print_string ("["^f^": ");
+    print_heapframe h;
+    print_string "]"
+
+and print_heapframe (frame:heapframe) =
     match frame with
     | NullFram -> print_string "Null";
     | Value(num) -> print_int num;
-    | Location(_) -> print_string "Location";
-    | Object(_) -> print_string "Object";
+    | FieldIndex(_) -> print_string "FieldIndex";
+    | Object(obj) -> 
+            print_string "Object: ";
+            print_obj obj
     | Closure(var, cmd, _) -> 
             print_string "Closure: "; 
             print_var var;

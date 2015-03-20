@@ -35,7 +35,7 @@ and cmd_node =
       Skip
     | VarDel of decl_node * cmd_node
     | ProcCall of expr_node * expr_node
-    | Malloc of expr_node
+    | Malloc of var_node 
     | VarAssign of var_node * expr_node
     | FieldAssign of expr_node * field_node * expr_node
     | Scope of cmd_node * cmd_node
@@ -134,9 +134,9 @@ and print_cmd x =
             print_string "](";
             print_expr expr2;
             print_string ")"
-    | Malloc (expr) -> 
+    | Malloc (var) -> 
             print_string "malloc(";
-            print_expr expr;
+            print_var var;
             print_string ")"
     | VarAssign (var, expr) ->
             print_string "(";

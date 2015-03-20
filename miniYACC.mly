@@ -52,7 +52,7 @@ decl :
 cmd:
     decl SEMICOLON cmd  { VarDel ($1, $3) }
     | expr PARENOPEN expr PARENCLOSE { ProcCall ($1, $3) }
-    | MALLOC PARENOPEN expr PARENCLOSE { Malloc ($3) }
+    | MALLOC PARENOPEN var PARENCLOSE { Malloc ($3) }
     | var ASSIGN expr { VarAssign ($1, $3) }
     | expr DOT field ASSIGN expr { FieldAssign ($1, $3, $5)  } 
     | SKIP { Skip }
