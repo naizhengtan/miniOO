@@ -1,7 +1,45 @@
 open Heapstack;;
 open Astree;;
 
-let rec eval (expr: expr_node) =
+let compare_equal (v1:heapframe) (v2:heapframe) = true;;
+
+let rec eval_bool (cond: bool_node) =
+    match cond with
+    | True -> true 
+    | False -> false
+    | Equal (expr1, expr2) ->
+            let val1 = eval expr1 in
+            let val2 = eval expr2 in
+                compare_equal val1 val2
+    | Lt (expr1, expr2) ->
+            let val1 = eval expr1 in
+            let val2 = eval expr2 in
+                (match val1 with
+                | Value(v1) -> 
+                        (match val2 with 
+                        | Value(v2) -> if v1 < v2 then true else false 
+                        | _ -> print_string "Error 4, Only number allows
+                                    to compare using <\n"; false
+                        )
+                | _ -> print_string "Error 4, Only number allows
+                                    to compare using <\n"; false
+                )
+    | Gt (expr1, expr2) ->
+            let val1 = eval expr1 in
+            let val2 = eval expr2 in
+                (match val1 with
+                | Value(v1) -> 
+                        (match val2 with 
+                        | Value(v2) -> if v1 > v2 then true else false 
+                        | _ -> print_string "Error 5, Only number allows
+                                    to compare using >\n"; false
+                        )
+                | _ -> print_string "Error 5, Only number allows
+                                    to compare using >\n"; false
+                )
+
+
+and eval (expr: expr_node) =
     match expr with 
     | VarExpr(var) -> 
             let loc = stack_find !curStack var in
@@ -63,6 +101,11 @@ let rec exec_cmd (cmd: cmd_node) =
                         let oldStack = stack_history_pop () in
                             curStack := oldStack
                 | _ -> print_string "Error 2: proc is not funct!\n")
+    | Cond (cond, cmd1, cmd2) ->
+            if eval_bool cond then
+                exec_cmd cmd1
+            else 
+                exec_cmd cmd2
     | VarAssign (var, expr) ->
             let loc = stack_find !curStack var in
                 let value = eval expr in
