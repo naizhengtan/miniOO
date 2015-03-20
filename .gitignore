@@ -1,8 +1,7 @@
 mini
 *.cmi
+*.mli
 *.cmo
 miniLEX.ml
 miniYACC.ml
-miniYACC.mli
-astree.mli
 miniYACC.output
