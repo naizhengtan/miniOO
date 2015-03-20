@@ -6,12 +6,26 @@ let rec eval (expr: expr_node) =
     | VarExpr(var) -> 
             let loc = stack_find !curStack var in
                 heap_get loc
-    | Number(num) -> Value(num) 
     | ProcExpr(proc) -> 
         (match proc with
         | Procedure (var, cmd) ->
             Closure (var, cmd, Hashtbl.copy !curStack)
         )
+    | Number(num) -> Value(num) 
+    | Plus (expr1, expr2) ->
+            let val1 = eval expr1 in
+            let val2 = eval expr2 in
+                (match val1 with
+                | Value(num1) ->
+                        (match val2 with 
+                        | Value(num2) ->
+                                Value (num1 + num2)
+                        | _ -> print_string "Error 1: 
+                                only num can applied for +"; NullFram
+                        )
+                | _ -> print_string "Error 1: only num can 
+                                    applied for +"; NullFram
+                )
     | _ -> print_string "unfinished expr eval\n"; NullFram
 
 let rec exec_cmd (cmd: cmd_node) =
@@ -34,7 +48,7 @@ let rec exec_cmd (cmd: cmd_node) =
                             exec_cmd cmd);
                         let oldStack = stack_history_pop () in
                             curStack := oldStack
-                | _ -> print_string "proc is not funct!\n")
+                | _ -> print_string "Error 2: proc is not funct!\n")
     | VarAssign (var, expr) ->
             let loc = stack_find !curStack var in
                 let value = eval expr in

@@ -37,7 +37,11 @@ let stack_history_pop () =
 
 let stack_add stack (var:var_node) (loc:heaploc) = 
     match var with
-    | Variable(vname) -> Hashtbl.add stack vname loc 
+    | Variable(vname) -> 
+            if Hashtbl.mem stack vname then
+                Hashtbl.replace stack vname loc
+            else 
+                Hashtbl.add stack vname loc 
 ;; 
 
 let stack_clone stack =
