@@ -28,7 +28,7 @@ rule token = parse
   | "proc"       { PROC }
   | "true"       { TRUE }
   | "false"      { FALSE }
-  | "atomic"     { ATOMIC }
+  | "lock"       { LOCK }
   | "malloc"     { MALLOC }
   | "if"         { IF }
   | "then"       { THEN }

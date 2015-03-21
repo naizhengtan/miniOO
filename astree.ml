@@ -42,7 +42,7 @@ and cmd_node =
     | Loop of bool_node * cmd_node
     | Cond of bool_node * cmd_node * cmd_node
     | Parl of cmd_node * cmd_node
-    | Atom of cmd_node
+    | Lock of cmd_node
 ;;
 (* Print functions *)
 
@@ -176,8 +176,8 @@ and print_cmd x =
             print_string "}{";
             print_cmd cmd2;
             print_string "}"
-    | Atom (cmd) ->
-            print_string "Atomic(";
+    | Lock (cmd) ->
+            print_string "Lock(";
             print_cmd cmd;
             print_string ")"
 

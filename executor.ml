@@ -1,6 +1,7 @@
 open Heapstack;;
 open Astree;;
 
+let glock = Mutex.create ();;
 let compare_equal (v1:heapframe) (v2:heapframe) = true;;
 
 let rec eval_bool (cond: bool_node) =
@@ -144,7 +145,10 @@ let rec exec_cmd (cmd: cmd_node) =
             let tid = Thread.create exec_cmd cmd1 in
                 exec_cmd cmd2;
                 Thread.join tid
-    | _ -> print_string "unfinished cmd execution\n"
+    | Lock (cmd) -> 
+            Mutex.lock glock;
+            exec_cmd cmd;
+            Mutex.unlock glock
 
 and exec (prog: cmd_node list) =
     match prog with 

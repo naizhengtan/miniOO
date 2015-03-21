@@ -23,7 +23,7 @@ heapstack:
 
 executor:
 	ocamlc -thread -i unix.cma threads.cma executor.ml > executor.mli
-	ocamlc -c executor.mli
+	ocamlc -thread -c unix.cma threads.cma executor.mli
 	ocamlc -thread -c unix.cma threads.cma executor.ml
 
 
