@@ -1,6 +1,6 @@
 all: ast heapstack executor yacc lexer
 	ocamlc -c mini.ml
-	ocamlc -thread -o mini unix.cma threads.cma astree.cmo heapstack.cmo executor.cmo miniLEX.cmo miniYACC.cmo mini.cmo
+	ocamlc -thread -o interpreter unix.cma threads.cma astree.cmo heapstack.cmo executor.cmo miniLEX.cmo miniYACC.cmo mini.cmo
 
 yacc:
 	ocamlyacc miniYACC.mly
@@ -28,4 +28,4 @@ executor:
 
 
 clean:
-	rm mini *.cmi *.cmo  *.mli miniLEX.ml miniYACC.ml miniYACC.output \
+	@(rm mini *.cmi *.cmo  *.mli miniLEX.ml miniYACC.ml miniYACC.output ) 2> /dev/null

@@ -1,0 +1,11 @@
+#!/bin/sh 
+
+if [ "$1" != "" ] && [ $1 = '-h' ]; then
+	echo 'Usage: minirun [file.mini]'
+elif [ "$1" != "" ] && [ -f $1 ]; then
+	cat $1 | ./interpreter
+else
+	printf "miniOO interpreter (v1.1)\nPress ctrl^D to run the program\n>"
+	./interpreter
+fi 
+
