@@ -140,6 +140,10 @@ let rec exec_cmd (cmd: cmd_node) =
                 exec_cmd cmd1
             else 
                 exec_cmd cmd2
+    | Parl (cmd1, cmd2) ->
+            let tid = Thread.create exec_cmd cmd1 in
+                exec_cmd cmd2;
+                Thread.join tid
     | _ -> print_string "unfinished cmd execution\n"
 
 and exec (prog: cmd_node list) =

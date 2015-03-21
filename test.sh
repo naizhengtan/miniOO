@@ -17,4 +17,12 @@
 
 #echo 'var $x; $x = 6; var $y; {var $x; $x = 5; $y = 3;};' | ./mini # scoping
 
-echo 'var $x; var $y; $x = 10; $y = 0; while $x > 0 { $x = $x -1; $y = $y + 2; };' | ./mini 
+#echo 'var $x; var $y; $x = 10; $y = 0; while $x > 0 { $x = $x -1; $y = $y + 2; };' | ./mini # loop 
+
+echo 'var $x; var $y; var $z; 
+$x = 10000; $y = 0; $z = 0; { 
+while $x > 0 { $x = $x -1; $y = $y + 1; } ||| 
+while $x > 0 { $x = $x -1; $z = $z + 1; } 
+};' | ./mini # parrallel
+
+
