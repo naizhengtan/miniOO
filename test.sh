@@ -15,4 +15,6 @@
 #echo 'var $x; malloc($x); var $y; malloc($y); $y.c = 10; $x.a = $y; var $r; $r = $x.a.c;' | ./mini # cascading indexing 
 #echo 'var $x; malloc($x); $x.c = 0; $x.f = proc $y: if $y < 1 then $x.r = $x.c else $x.f($y - 1); $x.f(2);' | ./mini # teacher example 3
 
-echo 'var $x; $x = 6; var $y; {var $x; $x = 5; $y = 3;};' | ./mini
+#echo 'var $x; $x = 6; var $y; {var $x; $x = 5; $y = 3;};' | ./mini # scoping
+
+echo 'var $x; var $y; $x = 10; $y = 0; while $x > 0 { $x = $x -1; $y = $y + 2; };' | ./mini 

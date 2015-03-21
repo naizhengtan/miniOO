@@ -129,6 +129,12 @@ let rec exec_cmd (cmd: cmd_node) =
             exec cmdlist;
             let oldStack = stack_history_pop () in
                 curStack := oldStack
+    | Loop (cond, cmd) -> 
+            let condv = ref (eval_bool cond) in 
+                while !condv do
+                    exec_cmd cmd;
+                    condv := (eval_bool cond)
+                done
     | Cond (cond, cmd1, cmd2) ->
             if eval_bool cond then
                 exec_cmd cmd1
