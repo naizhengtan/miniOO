@@ -56,7 +56,7 @@ cmd:
     | var ASSIGN expr { VarAssign ($1, $3) }
     | expr DOT field ASSIGN expr { FieldAssign ($1, $3, $5)  } 
     | SKIP { Skip }
-    | SOPEN cmd SEMICOLON cmd SCLOSE { Scope ($2, $4) }
+    | SOPEN prog SCLOSE { Scope ($2) }
     | WHILE boolean cmd { Loop ($2, $3) }
     | IF boolean THEN cmd ELSE cmd { Cond ($2, $4, $6) }
     | SOPEN cmd PARELLEL cmd SCLOSE { Parl ($2, $4) }

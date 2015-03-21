@@ -101,8 +101,9 @@ let rec exec_cmd (cmd: cmd_node) =
             let arg = eval expr2 in
                 (match func with 
                 | Closure(var, cmd, stack) ->
-                        stack_history_push !curStack;
-                        curStack := Hashtbl.copy stack;
+                        (* stack will be copied inside*)
+                        stack_history_push !curStack; 
+                        curStack := Hashtbl.copy !curStack;
                         (let loc = heap_alloc () in
                             stack_add !curStack var loc;
                             heap_set loc arg;
@@ -122,15 +123,20 @@ let rec exec_cmd (cmd: cmd_node) =
             let obj = eval expr1 in
             let value = eval expr2 in
                 obj_add obj field value
+    | Scope (cmdlist) ->
+            stack_history_push !curStack;
+            curStack := Hashtbl.copy !curStack;
+            exec cmdlist;
+            let oldStack = stack_history_pop () in
+                curStack := oldStack
     | Cond (cond, cmd1, cmd2) ->
             if eval_bool cond then
                 exec_cmd cmd1
             else 
                 exec_cmd cmd2
     | _ -> print_string "unfinished cmd execution\n"
-;;
 
-let rec exec (prog: cmd_node list) =
+and exec (prog: cmd_node list) =
     match prog with 
     | [] -> ()
     | cmd::prog -> exec_cmd cmd; exec prog

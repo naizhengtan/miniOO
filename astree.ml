@@ -38,7 +38,7 @@ and cmd_node =
     | Malloc of var_node 
     | VarAssign of var_node * expr_node
     | FieldAssign of expr_node * field_node * expr_node
-    | Scope of cmd_node * cmd_node
+    | Scope of cmd_node list 
     | Loop of bool_node * cmd_node
     | Cond of bool_node * cmd_node * cmd_node
     | Parl of cmd_node * cmd_node
@@ -152,11 +152,9 @@ and print_cmd x =
             print_string "=";
             print_expr expr2;
             print_string ")"
-    | Scope (cmd1, cmd2) ->
+    | Scope (cmdlist) ->
             print_string "{";
-            print_cmd cmd1;
-            print_string ";";
-            print_cmd cmd2;
+            print_prog cmdlist;
             print_string "}"
     | Loop (boolean, cmd) ->
             print_string "while(";
@@ -182,10 +180,9 @@ and print_cmd x =
             print_string "Atomic(";
             print_cmd cmd;
             print_string ")"
-;;
 
-let rec print_prog = function 
-    | [] -> print_newline ()
+and print_prog = function 
+    | [] -> ()
     | cmd::prog -> print_cmd cmd;
                    print_string " || ";
                    print_prog prog

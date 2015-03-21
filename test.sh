@@ -14,3 +14,5 @@
 #echo 'var $x; malloc($x); $x.c = 0; var $y; $x.c = 10; $y = $x.c;' | ./mini # dereference the field
 #echo 'var $x; malloc($x); var $y; malloc($y); $y.c = 10; $x.a = $y; var $r; $r = $x.a.c;' | ./mini # cascading indexing 
 #echo 'var $x; malloc($x); $x.c = 0; $x.f = proc $y: if $y < 1 then $x.r = $x.c else $x.f($y - 1); $x.f(2);' | ./mini # teacher example 3
+
+echo 'var $x; $x = 6; var $y; {var $x; $x = 5; $y = 3;};' | ./mini
