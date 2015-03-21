@@ -2,7 +2,7 @@
     open Astree;;
 %}
 
-%token DEFINE PLUS MINUS ASSIGN EQUAL PARENOPEN PARENCLOSE SOPEN SCLOSE 
+%token DEFINE PLUS MINUS ASSIGN EQUAL PARENOPEN PARENCLOSE SQUREOPEN SQURECLOSE SOPEN SCLOSE 
 %token DOT COLON SEMICOLON LESSTHAN GREATTHAN PARELLEL NULL PROC
 %token TRUE FALSE LOCK MALLOC IF THEN ELSE WHILE SKIP EOF
 %token < string > VAR
@@ -26,7 +26,8 @@ var :
     VAR      { Variable ($1) }
 
 field :
-    FIELD    { Field ($1) }
+      FIELD    { Field ($1) }
+    | SQUREOPEN expr SQURECLOSE     { Index ($2) }
 
 expr :
       field  { FieldExpr ($1) }

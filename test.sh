@@ -34,3 +34,6 @@
 #	while $x > 0 { lock($x = $x -1); $z = $z + 1; } 
 #};' | ./mini # synchronization
 
+# Advanced topic
+#echo 'var $a; var $b; malloc($a); $b = 1; $a.[$b] = 1; var $d; $d = $a.[1];' | ./mini # index 
+

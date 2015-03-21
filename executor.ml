@@ -109,7 +109,17 @@ and eval (expr: expr_node) =
             let obj = eval expr1 in
             let field = eval expr2 in
                 (match field with
-                | FieldIndex(f) -> obj_find obj f
+                | FieldIndex(f) -> 
+                    (match f with
+                    | Field (fname) ->
+                        obj_find obj fname 
+                    | Index (expr) ->
+                            let value = eval expr in
+                                (match value with
+                                | Value(index) -> obj_find obj (string_of_int index)
+                                | _ -> print_string "Error 8: only integer can
+                                be used as index\n"; NullFram)
+                    )
                 | _ -> print_string "Error 7: only field is allowed in
                             deref expresion\n"; NullFram;
                 )
@@ -148,7 +158,15 @@ let rec exec_cmd (cmd: cmd_node) =
     | FieldAssign (expr1, field, expr2) ->
             let obj = eval expr1 in
             let value = eval expr2 in
-                obj_add obj field value
+                (match field with
+                | Field(fname) -> obj_add obj fname value 
+                | Index(expr) ->
+                        let indexval = eval expr in
+                            (match indexval with 
+                            | Value(index) -> obj_add obj (string_of_int index) value 
+                            | _ -> print_string "Error 9: only integer can be
+                            used as index\n")
+                )
     | Scope (cmdlist) ->
             stack_history_push !curStack;
             curStack := Hashtbl.copy !curStack;

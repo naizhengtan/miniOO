@@ -5,6 +5,7 @@ type var_node =
 
 and field_node = 
     Field of string
+    | Index of expr_node 
 
 and decl_node = 
     Decl of var_node 
@@ -46,11 +47,6 @@ and cmd_node =
 ;;
 (* Print functions *)
 
-let print_field x =
-    match x with
-    | Field (var) -> print_string ("Field:("^var^")")
-;;
-
 let print_var x =
     match x with
     | Variable (var) -> print_string ("Var:("^var^")")
@@ -64,7 +60,15 @@ let print_decl x =
             print_string ")"
 ;;
 
-let rec print_proc x =
+let rec print_field x =
+    match x with
+    | Field (var) -> print_string ("Field:("^var^")")
+    | Index (expr) -> 
+            print_string "Field:(";
+            print_expr expr;
+            print_string ")"
+
+and print_proc x =
     match x with
     | Procedure (param, code) -> 
             print_string "Func: {";

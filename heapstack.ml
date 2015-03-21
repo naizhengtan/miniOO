@@ -1,5 +1,11 @@
 open Astree;;
 
+(* configuration *)
+let hEAP_SIZE = 4096 * 4096;;
+let sTACK_SIZE = 4096;;
+let sTACK_DEPTH = 1024;;
+let oBJ_SIZE = 4096;;
+
 (* type declaration *)
 type heaploc = Loc of int;;
 
@@ -13,12 +19,12 @@ type heapframe =
 
 (* global variable *)
 
-let mainStack : (string, heaploc) Hashtbl.t  = Hashtbl.create 1024;;
-let stackHistory = Array.make 1024 mainStack;;
+let mainStack : (string, heaploc) Hashtbl.t  = Hashtbl.create sTACK_SIZE;;
+let stackHistory = Array.make sTACK_DEPTH mainStack;;
 let curStack = ref mainStack;;
 let stack_history_pos = ref 0;;
 
-let mainHeap  = Array.make 4096 NullFram;;
+let mainHeap  = Array.make hEAP_SIZE NullFram;;
 let heapCounter = ref 0;;
 
 (* methods *)
@@ -79,37 +85,30 @@ let heap_add (x:heapframe) =
         heap_set loc x
 ;;
 
-let obj_add (hobj:heapframe) (f:field_node) (v:heapframe) =
+let obj_add (hobj:heapframe) (fname:string) (v:heapframe) =
     match hobj with 
     | Object (obj) -> 
-        begin
-        match f with
-        | Field(fname) ->
-            if Hashtbl.mem obj fname then
-                Hashtbl.replace obj fname v
-            else 
-                Hashtbl.add obj fname v
-        end
+       if Hashtbl.mem obj fname then
+           Hashtbl.replace obj fname v
+       else 
+           Hashtbl.add obj fname v
     | _ -> print_string "Error 6: only object can use field.\n"
 ;;
 
-let obj_find (hobj:heapframe) (f:field_node) =
+let obj_find (hobj:heapframe) (fname:string) =
     match hobj with 
     | Object(obj) ->
-        (match f with 
-        | Field(fname) ->
-            if Hashtbl.mem obj fname then
-                Hashtbl.find obj fname
-            else
-                NullFram
-        )
+       if Hashtbl.mem obj fname then
+           Hashtbl.find obj fname
+       else
+           NullFram
     | _ -> print_string "Error 6: only object can use field.\n";NullFram
 ;;
 
 (* constructor of heapframe*)
 
 let gen_empty_obj () =
-    let empty = Hashtbl.create 128 in
+    let empty = Hashtbl.create oBJ_SIZE in
         Object (empty)
 ;;
 

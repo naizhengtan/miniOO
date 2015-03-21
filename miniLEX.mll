@@ -16,6 +16,8 @@ rule token = parse
   | "=="         { EQUAL }
   | '('          { PARENOPEN }
   | ')'          { PARENCLOSE }
+  | '['          { SQUREOPEN}
+  | ']'          { SQURECLOSE}
   | '{'          { SOPEN }
   | '}'          { SCLOSE }
   | '.'          { DOT }
