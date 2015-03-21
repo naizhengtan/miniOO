@@ -2,7 +2,32 @@ open Heapstack;;
 open Astree;;
 
 let glock = Mutex.create ();;
-let compare_equal (v1:heapframe) (v2:heapframe) = true;;
+
+let rec compare_equal (v1:heapframe) (v2:heapframe) = 
+    match v1 with 
+    | Value (num1) -> (match v2 with 
+                      | Value(num2) -> if num1 = num2 then true else false  
+                      | _ -> false )
+    | NullFram  -> (match v2 with 
+                      | NullFram -> true 
+                      | _ -> false )
+    | FieldIndex (_) -> false (* does this make any sense? *)
+    | Closure (_,_,_) -> false
+    | Object (obj1) -> (match v2 with 
+                       | Object(obj2) -> compare_obj obj1 obj2
+                       | _ -> false )
+
+and compare_obj obj1 obj2 = 
+    let equal = ref true in
+        Hashtbl.iter (gen_compare_func equal obj2) obj1;
+        Hashtbl.iter (gen_compare_func equal obj1) obj2;
+        !equal
+
+and gen_compare_func equal obj index value =
+    if Hashtbl.mem obj index then
+        let cont = (Hashtbl.find obj index) in
+            if not (compare_equal value cont) then
+                equal := false
 
 let rec eval_bool (cond: bool_node) =
     match cond with
