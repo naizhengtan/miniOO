@@ -164,7 +164,8 @@ let gc () =
             fix_stack_var mapTbl (Array.get stackHistory stacknum)
         done;
         (* 4. change heap *)
-        mainHeap := newHeap
+        mainHeap := newHeap;
+        heapCounter := Hashtbl.length mapTbl
     end
 ;;
 
