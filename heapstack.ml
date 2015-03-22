@@ -11,6 +11,7 @@ type heaploc = Loc of int;;
 
 type heapframe =
       NullFram
+    | Empty
     | Value of int
     | FieldIndex of field_node 
     | Object of (string, heapframe) Hashtbl.t
@@ -22,22 +23,22 @@ type heapframe =
 let mainStack : (string, heaploc) Hashtbl.t  = Hashtbl.create sTACK_SIZE;;
 let stackHistory = Array.make sTACK_DEPTH mainStack;;
 let curStack = ref mainStack;;
-let stack_history_pos = ref 0;;
+let stackHistoryPos = ref 0;;
 
-let mainHeap  = Array.make hEAP_SIZE NullFram;;
+let mainHeap = ref (Array.make hEAP_SIZE NullFram);;
 let heapCounter = ref 0;;
 
 (* methods *)
 
 let stack_history_push (stack: (string, heaploc) Hashtbl.t) =
-    stack_history_pos := !stack_history_pos + 1;
+    stackHistoryPos := !stackHistoryPos + 1;
     let newstack = Hashtbl.copy stack in
-        Array.set stackHistory !stack_history_pos newstack 
+        Array.set stackHistory !stackHistoryPos newstack 
 ;;
 
 let stack_history_pop () =
-    let pos = !stack_history_pos in
-        stack_history_pos := !stack_history_pos - 1;
+    let pos = !stackHistoryPos in
+        stackHistoryPos := !stackHistoryPos - 1;
         Array.get stackHistory pos
 ;;
 
@@ -59,10 +60,9 @@ let stack_find stack (var:var_node) =
     | Variable(vname) -> Hashtbl.find stack vname 
 ;;
 
-
 let heap_alloc () =
     let counter = !heapCounter in
-        heapCounter := counter + 1;
+        heapCounter := !heapCounter + 1;
         Loc(counter)
 ;;
 
@@ -72,12 +72,12 @@ let heap_size () =
 
 let heap_set (loc:heaploc) (x:heapframe) =
     match loc with
-    | Loc (pos) -> Array.set mainHeap pos x
+    | Loc (pos) -> Array.set !mainHeap pos x
 ;;
 
 let heap_get (loc:heaploc) =
     match loc with
-    | Loc (pos) -> Array.get mainHeap pos 
+    | Loc (pos) -> Array.get !mainHeap pos 
 ;;
 
 let heap_add (x:heapframe) =
@@ -112,6 +112,62 @@ let gen_empty_obj () =
         Object (empty)
 ;;
 
+(* garbage collection *)
+
+let add_to_map map (index:string) (loc:heaploc) =
+    match loc with 
+    | Loc (hloc) -> 
+        if not (Hashtbl.mem map hloc) then
+            Hashtbl.add map hloc (Hashtbl.length map)
+;;
+
+let trace_stack_var mapTbl stack =
+    Hashtbl.iter (add_to_map mapTbl) stack 
+;;
+
+let fill_heap_frame newHeap (oldLoc:int) (newLoc:int) =
+    let frame = (Array.get !mainHeap oldLoc) in
+        Array.set newHeap newLoc frame
+;;
+
+let gen_new_heap mapTbl newHeap =
+    Hashtbl.iter (fill_heap_frame newHeap) mapTbl
+;;
+
+let fix_to_map map stack (index:string) (loc:heaploc) =
+    match loc with 
+    | Loc (hloc) -> 
+        if not (Hashtbl.mem map hloc) then 
+            (print_string "FATAL error: gc failed!\n";
+            exit(1)
+            )
+        else
+            Hashtbl.replace stack index (Loc(Hashtbl.find map hloc))
+;;
+
+let fix_stack_var mapTbl stack =
+    Hashtbl.iter (fix_to_map mapTbl stack) stack 
+;;
+
+let gc () =
+    let newHeap = Array.make hEAP_SIZE NullFram in
+    let mapTbl = Hashtbl.create hEAP_SIZE in
+    begin
+        (* 1. create mapping table *)
+        for stacknum = 0 to !stackHistoryPos do
+            trace_stack_var mapTbl (Array.get stackHistory stacknum)
+        done;
+        (* 2. generate new heap *)
+        gen_new_heap mapTbl newHeap;
+        (* 3. fix stack references *)
+        for stacknum = 0 to !stackHistoryPos do
+            fix_stack_var mapTbl (Array.get stackHistory stacknum)
+        done;
+        (* 4. change heap *)
+        mainHeap := newHeap
+    end
+;;
+
 (* print stack, print heap *)
 let print_stackframe (index:string) (loc:heaploc) =
     print_string (index^" -> ");
@@ -138,6 +194,7 @@ and print_field_heapframe (f:string) (h:heapframe) =
 and print_heapframe (frame:heapframe) =
     match frame with
     | NullFram -> print_string "Null";
+    | Empty -> print_string "";
     | Value(num) -> print_int num;
     | FieldIndex(_) -> print_string "FieldIndex";
     | Object(obj) -> 

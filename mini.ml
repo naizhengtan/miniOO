@@ -9,6 +9,7 @@ try
     print_prog ast;
     print_string "\n";
     exec ast;
+    gc ();
     print_stack ();
     print_heap ()
 with Parse_error ->

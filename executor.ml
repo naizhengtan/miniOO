@@ -11,6 +11,7 @@ let rec compare_equal (v1:heapframe) (v2:heapframe) =
     | NullFram  -> (match v2 with 
                       | NullFram -> true 
                       | _ -> false )
+    | Empty -> false
     | FieldIndex (_) -> false (* does this make any sense? *)
     | Closure (_,_,_) -> false
     | Object (obj1) -> (match v2 with 
