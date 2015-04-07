@@ -1,0 +1,9 @@
+var $x; var $y; var $z; 
+$x = 10000; $y = 0; $z = 0; { 
+while $x > 0 { 
+	lock( if $x > 0 then {$x = $x -1; $y = $y + 1;} else skip); 
+} ||| 
+while $x > 0 { 
+	lock( if $x > 0 then {$x = $x -1; $z = $z + 1;} else skip); 
+}
+};
