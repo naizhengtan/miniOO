@@ -127,7 +127,7 @@ and eval (expr: expr_node) =
     | Null (_) -> NullFram
 
 let rec exec_cmd (cmd: cmd_node) =
-    match cmd with
+    (match cmd with
     | Skip -> ()
     | VarDel (Decl(var), subcmd) ->
             let loc = heap_alloc () in 
@@ -140,7 +140,7 @@ let rec exec_cmd (cmd: cmd_node) =
                 | Closure(var, cmd, stack) ->
                         (* stack will be copied inside*)
                         stack_history_push !curStack; 
-                        curStack := Hashtbl.copy !curStack;
+                        curStack := stack; 
                         (let loc = heap_alloc () in
                             stack_add !curStack var loc;
                             heap_set loc arg;
@@ -192,7 +192,8 @@ let rec exec_cmd (cmd: cmd_node) =
     | Lock (cmd) -> 
             Mutex.lock glock;
             exec_cmd cmd;
-            Mutex.unlock glock
+            Mutex.unlock glock 
+    ) (*print_stack (); print_heap ()*)
 
 and exec (prog: cmd_node list) =
     match prog with 
